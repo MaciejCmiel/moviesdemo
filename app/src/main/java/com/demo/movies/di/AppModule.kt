@@ -1,7 +1,7 @@
 package com.demo.movies.di
 
 import com.demo.movies.common.AndroidSchedulerProvider
-import com.demo.movies.common.BASE_URL
+import com.demo.movies.common.Constants.BASE_URL
 import com.demo.movies.common.SchedulerProvider
 import com.demo.movies.data.remote.AuthInterceptor
 import com.demo.movies.data.remote.MovieRepository

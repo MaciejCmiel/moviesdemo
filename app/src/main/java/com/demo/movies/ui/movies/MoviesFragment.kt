@@ -1,14 +1,19 @@
 package com.demo.movies.ui.movies
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.demo.movies.R
+import com.demo.movies.common.Constants
+import com.demo.movies.data.remote.model.Movie
 import com.demo.movies.databinding.FragmentMoviesBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,35 +44,8 @@ class MoviesFragment : Fragment(), MoviesRecyclerViewAdapter.MovieInteractionLis
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setViews()
         setObservers()
-
-        viewModel.getMovies()
-    }
-
-    private fun setViews() = with(binding) {
-
-        rvMovies.apply {
-            adapter = MoviesRecyclerViewAdapter(mutableListOf(), this@MoviesFragment)
-            layoutManager = LinearLayoutManager(requireContext())
-        }
-
-    }
-
-    private fun setObservers() = with(viewModel) {
-
-        moviesLiveData.observe(viewLifecycleOwner) {
-            moviesAdapter.updateMovies(it)
-        }
-        networkErrorLiveData.observe(viewLifecycleOwner) {
-            handleError(it)
-        }
-
-    }
-
-    private fun handleError(it: Throwable?) {
-        Snackbar.make(requireView(), R.string.network_error, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onDestroyView() {
@@ -75,8 +53,36 @@ class MoviesFragment : Fragment(), MoviesRecyclerViewAdapter.MovieInteractionLis
         _binding = null
     }
 
-    override fun onItemClicked(position: Int) {
-        findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+    private fun setViews() = with(binding) {
+        rvMovies.apply {
+            adapter = MoviesRecyclerViewAdapter(mutableListOf(), this@MoviesFragment)
+            layoutManager = getOrientationBasedLayoutManager()
+        }
+    }
+
+    private fun getOrientationBasedLayoutManager() = when (resources.configuration.orientation) {
+        Configuration.ORIENTATION_LANDSCAPE -> GridLayoutManager(requireContext(), 2)
+        else -> LinearLayoutManager(requireContext())
+    }
+
+    private fun setObservers() = with(viewModel) {
+        moviesLiveData.observe(viewLifecycleOwner) {
+            moviesAdapter.updateMovies(it)
+        }
+        networkErrorLiveData.observe(viewLifecycleOwner) {
+            handleError(it)
+        }
+    }
+
+    private fun handleError(it: Throwable?) {
+        Snackbar.make(requireView(), R.string.network_error, Snackbar.LENGTH_LONG).show()
+    }
+
+    override fun onItemClicked(selectedMovie: Movie) {
+        findNavController().navigate(
+            R.id.action_open_movie_details,
+            bundleOf(Constants.MOVIE_DTO_KEY to selectedMovie)
+        )
     }
 
     override fun onBottomReached() {

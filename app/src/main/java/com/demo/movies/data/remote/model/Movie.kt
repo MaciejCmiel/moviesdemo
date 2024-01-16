@@ -1,7 +1,10 @@
 package com.demo.movies.data.remote.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Movie(
-    val adult: Boolean,
     val backdrop_path: String,
     val overview: String,
     val poster_path: String,
@@ -9,4 +12,4 @@ data class Movie(
     val release_date: String,
     val vote_average: Double,
     val vote_count: Int
-)
+) : Parcelable

@@ -27,13 +27,17 @@ class MoviesViewModel @Inject constructor(
     private val networkErrorMutableLiveData = MutableLiveData<Throwable>()
     val networkErrorLiveData: LiveData<Throwable> = networkErrorMutableLiveData
 
+    init {
+        getMovies()
+    }
+
     fun getNextPage() {
         if (lastFetchedPage < totalPages) {
             getMovies(++lastFetchedPage)
         }
     }
 
-    fun getMovies(page: Int = 1) {
+    private fun getMovies(page: Int = 1) {
         disposables.add(
             repository.getNowPlaying(page)
                 .subscribeOn(schedulerProvider.backgroundThread())

@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.demo.movies.R
-import com.demo.movies.common.IMAGE_ENDPOINT
+import com.demo.movies.common.Constants.IMAGE_ENDPOINT_SD
 import com.demo.movies.data.remote.model.Movie
 import com.demo.movies.databinding.MovieListItemBinding
 
@@ -28,7 +28,7 @@ internal class MoviesRecyclerViewAdapter(
         bind(movies[position])
         with(binding) {
             root.setOnClickListener {
-                movieInteractionListener.onItemClicked(position)
+                movieInteractionListener.onItemClicked(movies[position])
             }
         }
     }
@@ -47,7 +47,7 @@ internal class MoviesRecyclerViewAdapter(
 
         fun bind(movie: Movie) = with(binding) {
             Glide.with(root.context)
-                .load("$IMAGE_ENDPOINT${movie.poster_path}")
+                .load("$IMAGE_ENDPOINT_SD${movie.poster_path}")
                 .into(ivPoster)
 
             tvTitle.text = movie.title
@@ -65,7 +65,7 @@ internal class MoviesRecyclerViewAdapter(
 
     interface MovieInteractionListener {
 
-        fun onItemClicked(position: Int)
+        fun onItemClicked(selectedMovie: Movie)
 
         fun onBottomReached()
 
