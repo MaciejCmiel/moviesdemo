@@ -44,4 +44,5 @@
 
     <string name="movie_rating">Rating: %.2f (%d)</string>
     <string name="movie_release_date">Release date: %s</string>
+    <string name="network_error">Network error occurred. \nPlease check your internet connection.</string>
 </resources>

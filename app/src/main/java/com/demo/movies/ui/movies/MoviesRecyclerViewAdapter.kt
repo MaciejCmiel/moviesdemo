@@ -22,6 +22,9 @@ internal class MoviesRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) = with(holder) {
+        if (position == movies.size - 1) {
+            movieInteractionListener.onBottomReached()
+        }
         bind(movies[position])
         with(binding) {
             root.setOnClickListener {
@@ -63,6 +66,8 @@ internal class MoviesRecyclerViewAdapter(
     interface MovieInteractionListener {
 
         fun onItemClicked(position: Int)
+
+        fun onBottomReached()
 
         fun onMovieChecked(checked: Boolean)
 

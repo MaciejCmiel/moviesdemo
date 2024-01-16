@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.demo.movies.common.SchedulerProvider
-import com.demo.movies.data.remote.model.Movie
 import com.demo.movies.data.remote.MovieRepository
+import com.demo.movies.data.remote.model.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
@@ -18,19 +18,39 @@ class MoviesViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val disposables = CompositeDisposable()
+    private var lastFetchedPage = 1
+    private var totalPages = 1
 
-    private val moviesMutableLiveData = MutableLiveData<List<Movie>>()
-    val moviesLiveData: LiveData<List<Movie>> = moviesMutableLiveData
+    private val moviesMutableLiveData = MutableLiveData<MutableList<Movie>>()
+    val moviesLiveData: LiveData<MutableList<Movie>> = moviesMutableLiveData
 
-    fun getMovies() {
+    private val networkErrorMutableLiveData = MutableLiveData<Throwable>()
+    val networkErrorLiveData: LiveData<Throwable> = networkErrorMutableLiveData
+
+    fun getNextPage() {
+        if (lastFetchedPage < totalPages) {
+            getMovies(++lastFetchedPage)
+        }
+    }
+
+    fun getMovies(page: Int = 1) {
         disposables.add(
-            repository.getNowPlaying()
+            repository.getNowPlaying(page)
                 .subscribeOn(schedulerProvider.backgroundThread())
                 .observeOn(schedulerProvider.uiThread())
                 .subscribe(
                     { nowPlaying ->
-                        moviesMutableLiveData.postValue(nowPlaying.results)
+                        lastFetchedPage = nowPlaying.page
+                        totalPages = nowPlaying.total_pages
+
+                        moviesLiveData.value.let { displayedMovies ->
+                            displayedMovies ?: arrayListOf()
+                        }.apply {
+                            addAll(nowPlaying.results)
+                        }.let(moviesMutableLiveData::postValue)
+
                     }, { throwable ->
+                        networkErrorMutableLiveData.postValue(throwable)
                         Timber.d(throwable)
                     }
                 )

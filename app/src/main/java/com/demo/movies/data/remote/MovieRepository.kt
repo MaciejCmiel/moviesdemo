@@ -6,6 +6,6 @@ class MovieRepository @Inject constructor(
     private val movieService: MovieService
 ) {
 
-    fun getNowPlaying() = movieService.getNowPlaying( 1)
+    fun getNowPlaying(page: Int) = movieService.getNowPlaying(page)
 
 }
