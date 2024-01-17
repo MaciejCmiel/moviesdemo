@@ -19,9 +19,6 @@ import com.demo.movies.databinding.FragmentMoviesBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 @AndroidEntryPoint
 class MoviesFragment : Fragment(), MoviesRecyclerViewAdapter.MovieInteractionListener {
 

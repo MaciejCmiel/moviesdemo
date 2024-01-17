@@ -9,7 +9,7 @@ import com.demo.movies.data.domain.Movie
 import com.demo.movies.data.local.FavMoviesRepository
 import com.demo.movies.data.local.model.FavMovie
 import com.demo.movies.data.local.toDbModel
-import com.demo.movies.data.remote.MovieRepository
+import com.demo.movies.data.remote.MovieRemoteRepository
 import com.demo.movies.data.remote.model.MovieApiModel
 import com.demo.movies.data.remote.toDomainModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
-    private val repository: MovieRepository,
+    private val remoteRepository: MovieRemoteRepository,
     private val favMoviesRepository: FavMoviesRepository
 ) : ViewModel() {
 
@@ -76,7 +76,7 @@ class MoviesViewModel @Inject constructor(
 
     private fun getMovies(page: Int = 1) {
         disposables.add(
-            repository.getNowPlaying(page)
+            remoteRepository.getNowPlaying(page)
                 .subscribe(
                     { nowPlaying ->
                         lastFetchedPage = nowPlaying.page

@@ -3,7 +3,7 @@ package com.demo.movies.data.remote
 import com.demo.movies.common.SchedulerProvider
 import javax.inject.Inject
 
-class MovieRepository @Inject constructor(
+class MovieRemoteRepository @Inject constructor(
     private val movieService: MovieService,
     private val schedulerProvider: SchedulerProvider
 ) {

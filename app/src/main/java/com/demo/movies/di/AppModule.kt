@@ -10,7 +10,7 @@ import com.demo.movies.data.local.MoviesDatabase
 import com.demo.movies.data.local.RoomFavMoviesRepository
 import com.demo.movies.data.local.dao.FavMovieDao
 import com.demo.movies.data.remote.AuthInterceptor
-import com.demo.movies.data.remote.MovieRepository
+import com.demo.movies.data.remote.MovieRemoteRepository
 import com.demo.movies.data.remote.MovieService
 import dagger.Module
 import dagger.Provides
@@ -62,7 +62,7 @@ object AppModule {
     fun provideMovieRepository(
         movieService: MovieService,
         schedulerProvider: SchedulerProvider
-    ): MovieRepository = MovieRepository(movieService, schedulerProvider)
+    ): MovieRemoteRepository = MovieRemoteRepository(movieService, schedulerProvider)
 
     @Provides
     @Singleton
