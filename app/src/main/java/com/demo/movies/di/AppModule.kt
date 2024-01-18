@@ -1,8 +1,14 @@
 package com.demo.movies.di
 
+import android.app.Application
+import androidx.room.Room
 import com.demo.movies.common.AndroidSchedulerProvider
 import com.demo.movies.common.Constants.BASE_URL
 import com.demo.movies.common.SchedulerProvider
+import com.demo.movies.data.local.FavMoviesRepository
+import com.demo.movies.data.local.MoviesDatabase
+import com.demo.movies.data.local.RoomFavMoviesRepository
+import com.demo.movies.data.local.dao.FavMovieDao
 import com.demo.movies.data.remote.AuthInterceptor
 import com.demo.movies.data.remote.MovieRepository
 import com.demo.movies.data.remote.MovieService
@@ -53,7 +59,34 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMovieRepository(movieService: MovieService): MovieRepository =
-        MovieRepository(movieService)
+    fun provideMovieRepository(
+        movieService: MovieService,
+        schedulerProvider: SchedulerProvider
+    ): MovieRepository = MovieRepository(movieService, schedulerProvider)
 
+    @Provides
+    @Singleton
+    fun provideMoviesDatabase(
+        application: Application
+    ): MoviesDatabase = Room.databaseBuilder(
+        application,
+        MoviesDatabase::class.java,
+        MoviesDatabase.DATABASE_NAME
+    ).build()
+
+    @Provides
+    @Singleton
+    fun provideFavMovieDao(
+        moviesDatabase: MoviesDatabase
+    ): FavMovieDao = moviesDatabase.favMovieDao()
+
+    @Provides
+    @Singleton
+    fun provideFavMovieRepository(
+        favMovieDao: FavMovieDao,
+        schedulerProvider: SchedulerProvider
+    ): FavMoviesRepository = RoomFavMoviesRepository(
+        favMovieDao,
+        schedulerProvider
+    )
 }

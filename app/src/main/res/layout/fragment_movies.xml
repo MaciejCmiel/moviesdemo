@@ -6,12 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".ui.movies.MoviesFragment">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvMovies"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginVertical="16dp"
-            app:layoutManager="LinearLayoutManager"
-            tools:listitem="@layout/movie_list_item" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMovies"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginVertical="16dp"
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/movie_list_item" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="ivEmptyList, tvEmptyList" />
+
+    <ImageView
+        android:id="@+id/ivEmptyList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/rvMovies"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rvMovies"
+        android:src="@drawable/ic_launcher_foreground" />
+
+    <TextView
+        android:id="@+id/tvEmptyList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:gravity="center"
+        android:text="@string/network_error"
+        app:layout_constraintEnd_toEndOf="@+id/ivEmptyList"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivEmptyList" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,4 +15,8 @@
     <string name="movie_rating">Rating: %.2f (%d)</string>
     <string name="movie_release_date">Release date: %s</string>
     <string name="network_error">Network error occurred. \nPlease check your internet connection.</string>
+
+    <string name="movie_added_to_fav">%s added to favorites.</string>
+    <string name="movie_removed_from_fav">%s removed from favorites.</string>
+
 </resources>

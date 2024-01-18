@@ -7,10 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.demo.movies.R
-import com.demo.movies.common.Constants.IMAGE_ENDPOINT_HD
 import com.demo.movies.common.Constants.MOVIE_DTO_KEY
 import com.demo.movies.common.getParcelableCompat
-import com.demo.movies.data.remote.model.Movie
+import com.demo.movies.data.domain.Movie
 import com.demo.movies.databinding.FragmentMovieDetailsBinding
 
 /**
@@ -45,20 +44,22 @@ class FragmentMovieDetails : Fragment() {
 
         with(binding) {
             Glide.with(root.context)
-                .load("${IMAGE_ENDPOINT_HD}${movie.backdrop_path}")
+                .load(movie.backdropPathUrlHd)
+                .placeholder(R.drawable.ic_launcher_foreground)
                 .into(ivPoster)
             tvTitle.text = movie.title
             tvRating.text = root.context.getString(
                 R.string.movie_rating,
-                movie.vote_average,
-                movie.vote_count
+                movie.voteAverage,
+                movie.voteCount
             )
             tvReleaseDate.text = root.context.getString(
                 R.string.movie_release_date,
-                movie.release_date
+                movie.releaseDate
             )
             tvDescription.text = movie.overview
         }
+
     }
 
     override fun onDestroyView() {

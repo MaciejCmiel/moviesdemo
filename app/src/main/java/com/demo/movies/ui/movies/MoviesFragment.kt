@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -13,7 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.demo.movies.R
 import com.demo.movies.common.Constants
-import com.demo.movies.data.remote.model.Movie
+import com.demo.movies.data.domain.Movie
 import com.demo.movies.databinding.FragmentMoviesBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,16 +67,32 @@ class MoviesFragment : Fragment(), MoviesRecyclerViewAdapter.MovieInteractionLis
     }
 
     private fun setObservers() = with(viewModel) {
-        moviesLiveData.observe(viewLifecycleOwner) {
-            moviesAdapter.updateMovies(it)
-        }
-        networkErrorLiveData.observe(viewLifecycleOwner) {
-            handleError(it)
-        }
+        combinedMoviesLiveData.observe(viewLifecycleOwner, ::updateMovies)
+        networkErrorLiveData.observe(viewLifecycleOwner, ::handleError)
+        addedToFavLiveData.observe(viewLifecycleOwner, ::handleFavMovieUpdate)
     }
 
-    private fun handleError(it: Throwable?) {
-        Snackbar.make(requireView(), R.string.network_error, Snackbar.LENGTH_LONG).show()
+    private fun updateMovies(movies: List<Movie>?) = with(binding) {
+        emptyView.isVisible = movies.isNullOrEmpty()
+        movies?.let(moviesAdapter::updateMovies)
+    }
+
+    private fun handleError(error: Throwable?) {
+        showSnackbar(getString(R.string.network_error))
+    }
+
+    private fun handleFavMovieUpdate(movie: Movie) {
+        showSnackbar(
+            getString(
+                if (movie.isFavorite) R.string.movie_added_to_fav
+                else R.string.movie_removed_from_fav,
+                movie.title
+            )
+        )
+    }
+
+    private fun showSnackbar(content: String) {
+        Snackbar.make(requireView(), content, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onItemClicked(selectedMovie: Movie) {
@@ -89,7 +106,11 @@ class MoviesFragment : Fragment(), MoviesRecyclerViewAdapter.MovieInteractionLis
         viewModel.getNextPage()
     }
 
-    override fun onMovieChecked(checked: Boolean) {
-        TODO("Not yet implemented")
+    override fun onMovieCheckChange(selectedMovie: Movie) {
+        if (selectedMovie.isFavorite) {
+            viewModel.addMovieToFavorites(selectedMovie)
+        } else {
+            viewModel.removeFromFavorites(selectedMovie)
+        }
     }
 }

@@ -5,8 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.demo.movies.R
-import com.demo.movies.common.Constants.IMAGE_ENDPOINT_SD
-import com.demo.movies.data.remote.model.Movie
+import com.demo.movies.data.domain.Movie
 import com.demo.movies.databinding.MovieListItemBinding
 
 internal class MoviesRecyclerViewAdapter(
@@ -25,12 +24,8 @@ internal class MoviesRecyclerViewAdapter(
         if (position == movies.size - 1) {
             movieInteractionListener.onBottomReached()
         }
-        bind(movies[position])
-        with(binding) {
-            root.setOnClickListener {
-                movieInteractionListener.onItemClicked(movies[position])
-            }
-        }
+        bind(movies[position], movieInteractionListener)
+        Unit
     }
 
     override fun getItemCount(): Int = movies.count()
@@ -45,21 +40,35 @@ internal class MoviesRecyclerViewAdapter(
         val binding: MovieListItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(movie: Movie) = with(binding) {
+        fun bind(
+            movie: Movie,
+            movieInteractionListener: MovieInteractionListener
+        ) = with(binding) {
+            root.setOnClickListener {
+                movieInteractionListener.onItemClicked(movie)
+            }
+
             Glide.with(root.context)
-                .load("$IMAGE_ENDPOINT_SD${movie.poster_path}")
+                .load(movie.posterPathUrlSd)
+                .placeholder(R.drawable.ic_launcher_foreground)
                 .into(ivPoster)
 
             tvTitle.text = movie.title
             tvRating.text = root.context.getString(
                 R.string.movie_rating,
-                movie.vote_average,
-                movie.vote_count
+                movie.voteAverage,
+                movie.voteCount
             )
             tvReleaseDate.text = root.context.getString(
                 R.string.movie_release_date,
-                movie.release_date
+                movie.releaseDate
             )
+            ivFavorite.apply {
+                isChecked = movie.isFavorite
+                setOnClickListener {
+                    movieInteractionListener.onMovieCheckChange(movie.copy(isFavorite = isChecked))
+                }
+            }
         }
     }
 
@@ -69,7 +78,7 @@ internal class MoviesRecyclerViewAdapter(
 
         fun onBottomReached()
 
-        fun onMovieChecked(checked: Boolean)
+        fun onMovieCheckChange(selectedMovie: Movie)
 
     }
 

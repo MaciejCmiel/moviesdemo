@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Movie(
+data class MovieApiModel(
     val backdrop_path: String,
     val overview: String,
     val poster_path: String,
